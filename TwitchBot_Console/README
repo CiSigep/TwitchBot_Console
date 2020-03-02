@@ -1,0 +1,1 @@
+﻿A C# Twitch Bot That runs on the console. To run, create an App.config file with the following keys: username, oauth, admin.

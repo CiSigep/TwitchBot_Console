@@ -12,7 +12,7 @@ namespace TwitchBot_Console.Model
         public Level AccessLevel { get; set; }
 
         private Bot.TwitchBot bot;
-        public void execute(string channel)
+        public void execute(IRCMessage msg)
         {
             // Make the doWork Thread end.
             bot.Live = false;

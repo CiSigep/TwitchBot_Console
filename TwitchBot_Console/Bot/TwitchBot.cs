@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace TwitchBot_Console.Bot
         private CommandDictionary globalCommands;
         private IRCUtil irc;
         private string botUsername;
+        private Logger _logger;
         public bool Live { get; set; }
 
         public TwitchBot(string username, string oAuth)
@@ -25,7 +27,10 @@ namespace TwitchBot_Console.Bot
             Live = true;
             globalCommands = new CommandDictionary("#GLOBAL#", irc);
             globalCommands["shutdown"] = new ShutdownCommand(this);
+            globalCommands["leaveChannel"] = new LeaveChannelCommand(this, Level.LEVEL_MODERATOR);
             botUsername = username;
+
+            this._logger = LogManager.GetCurrentClassLogger();
         }
 
         public bool joinChannel(string channelName)
@@ -34,6 +39,7 @@ namespace TwitchBot_Console.Bot
             channelName = channelName.ToLower();
             try
             {
+                _logger.Info("Joining channel - " + channelName);
                 channels.Add(channelName, new CommandDictionary(channelName, irc));
                 irc.join(channelName);
             }
@@ -49,6 +55,7 @@ namespace TwitchBot_Console.Bot
         {
             try
             {
+                _logger.Info("Leaving channel - " + channelName);
                 channels.Remove(channelName);
                 irc.leave(channelName);
             }
@@ -63,6 +70,9 @@ namespace TwitchBot_Console.Bot
         public void doWork()
         {
             joinChannel(ConfigurationManager.AppSettings["admin"]);
+            
+            // Grant users way to have bot join their channel.
+            channels[ConfigurationManager.AppSettings["admin"]]["joinChannel"] = new JoinChannelCommand(this, Level.LEVEL_EVERYONE);
 
             while (Live)
             {
@@ -71,17 +81,19 @@ namespace TwitchBot_Console.Bot
                 {
                     // Temporary if for testing purposes. Name is removed in GitHub Syncs
                     //TODO: remove all username references for git commits
-                    if (msg.Username.ToLower().Equals(ConfigurationManager.AppSettings["admin"].ToLower()) && msg.Message.StartsWith("!"))
+                    if (msg.Message.StartsWith("!"))
                         handleCommand(msg);
 
                 }
             }
+
+            LogManager.Shutdown();
         }
 
         private void handleCommand(IRCMessage msg)
         {
             string command = msg.Message.Split(null)[0].Remove(0, 1);
-
+            
             // Check the global commands before going for channel commands
             ICommand cmd = globalCommands[command];
             if(cmd == null)
@@ -90,7 +102,10 @@ namespace TwitchBot_Console.Bot
             }
 
             if (cmd != null)
-                cmd.execute(msg.Channel);
+            {
+                _logger.Info("Executing command " + command + " in channel " + msg.Channel);
+                cmd.execute(msg);
+            }
              
         }
 

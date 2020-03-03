@@ -8,6 +8,7 @@ namespace TwitchBot_Console
     {
         static void Main(string[] args)
         {
+
             string username = ConfigurationManager.AppSettings["username"];
             string token = ConfigurationManager.AppSettings["oauth"];
 

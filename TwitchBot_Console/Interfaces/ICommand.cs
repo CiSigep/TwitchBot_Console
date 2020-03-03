@@ -14,7 +14,7 @@ namespace TwitchBot_Console.Model
         // Shows who can run the command.
         Level AccessLevel { get; set; }
 
-        void execute(string channel);
+        void execute(IRCMessage msg);
 
     }
 }

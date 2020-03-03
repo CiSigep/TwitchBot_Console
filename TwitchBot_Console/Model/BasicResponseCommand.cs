@@ -19,9 +19,9 @@ namespace TwitchBot_Console.Model
             AccessLevel = accessLevel;
             this.util = util;
         }
-        public virtual void execute(string channel)
+        public virtual void execute(IRCMessage msg)
         {
-            util.send(channel, Response);
+            util.send(msg.Channel, Response);
         }
 
        

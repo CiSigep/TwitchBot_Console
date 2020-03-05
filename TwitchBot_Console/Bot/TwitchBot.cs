@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchBot_Console.Model;
@@ -45,6 +46,7 @@ namespace TwitchBot_Console.Bot
             }
             catch(Exception e)
             {
+                _logger.Error("Exception in channel join - " + e);
                 return false;
             }
 
@@ -79,11 +81,8 @@ namespace TwitchBot_Console.Bot
                 IRCMessage msg = irc.receive();
                 if (msg.Username != null && !msg.Username.Equals(botUsername))
                 {
-                    // Temporary if for testing purposes. Name is removed in GitHub Syncs
-                    //TODO: remove all username references for git commits
                     if (msg.Message.StartsWith("!"))
                         handleCommand(msg);
-
                 }
             }
 
@@ -101,7 +100,7 @@ namespace TwitchBot_Console.Bot
                 cmd = channels[msg.Channel][command];
             }
 
-            if (cmd != null)
+            if (cmd != null && msg.AccessLevel <= cmd.AccessLevel)
             {
                 _logger.Info("Executing command " + command + " in channel " + msg.Channel);
                 cmd.execute(msg);

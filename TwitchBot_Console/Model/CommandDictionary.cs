@@ -41,7 +41,7 @@ namespace TwitchBot_Console.Model
         {
             //For now some dummy code
             commands = new Dictionary<string, ICommand>();
-            commands.Add("testKappa", new BasicResponseCommand(util, "Kappa", Level.LEVEL_ADMIN));
+            commands.Add("testKappa", new BasicResponseCommand(util, "Kappa", Level.LEVEL_EVERYONE));
         }
 
     }

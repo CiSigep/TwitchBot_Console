@@ -31,6 +31,10 @@ namespace TwitchBot_Console.Util
             writer.WriteLine("NICK " + username);
             writer.WriteLine("USER " + username + " 8 * :" + username);
             writer.Flush();
+            writer.WriteLine("CAP REQ :twitch.tv/tags");
+            writer.Flush();
+            reader.ReadLine();
+            reader.ReadLine();
         }
 
         public void join(string name)

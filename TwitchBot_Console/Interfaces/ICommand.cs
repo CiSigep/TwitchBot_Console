@@ -7,7 +7,7 @@ using TwitchBot_Console.Util;
 
 namespace TwitchBot_Console.Model
 {
-    enum Level { LEVEL_ADMIN, LEVEL_BROADCASTER, LEVEL_MODERATOR, LEVEL_SUBSCRIBER, LEVEL_EVERYONE }
+    public enum Level { LEVEL_ADMIN, LEVEL_BROADCASTER, LEVEL_MODERATOR, LEVEL_SUBSCRIBER, LEVEL_EVERYONE }
     interface ICommand
     {
 
